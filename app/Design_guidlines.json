@@ -1,0 +1,50 @@
+"app_name": "CAPACITY CONNECT",
+  "tagline": "Connect Skills. Unlock Potential.",
+  "theme": "dark-first corporate enterprise LMS",
+  "colors": {
+    "background": "#090B0E",
+    "surface": "#12161F",
+    "surface_hover": "#1A202C",
+    "primary": "#3B82F6",
+    "accent": "#00F0FF",
+    "text_primary": "#F8FAFC",
+    "text_secondary": "#94A3B8",
+    "border": "#1E293B"
+  },
+  "typography": {
+    "headings": "Outfit, sans-serif",
+    "body": "Plus Jakarta Sans, sans-serif",
+    "mono": "JetBrains Mono, monospace"
+  },
+  "image_urls": [
+    {
+      "category": "hero_banner",
+      "description": "Professional training and learning analytics",
+      "url": "https://images.unsplash.com/photo-1542744173-8e7e53415bb0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwxfHxjb3Jwb3JhdGUlMjB0cmFpbmluZyUyMHByb2Zlc3Npb25hbCUyMGxlYXJuaW5nJTIwYW5hbHl0aWNzfGVufDB8fHx8MTc4ODUwOTA0Nnww&ixlib=rb-4.1.0&q=85"
+    },
+    {
+      "category": "course_thumbnail",
+      "description": "Group working on computers",
+      "url": "https://images.unsplash.com/photo-1723987251277-18fc0a1effd0?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwzfHxjb3Jwb3JhdGUlMjB0cmFpbmluZyUyMHByb2Zlc3Npb25hbCUyMGxlYXJuaW5nJTIwYW5hbHl0aWNzfGVufDB8fHx8MTc4ODUwOTA0Nnww&ixlib=rb-4.1.0&q=85"
+    },
+    {
+      "category": "analytics_preview",
+      "description": "Woman working on laptop with charts",
+      "url": "https://images.unsplash.com/photo-1763038311036-6d18805537e5?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NDk1ODB8MHwxfHNlYXJjaHwyfHxjb3Jwb3JhdGUlMjB0cmFpbmluZyUyMHByb2Zlc3Npb25hbCUyMGxlYXJuaW5nJTIwYW5hbHl0aWNzfGVufDB8fHx8MTc4ODUwOTA0Nnww&ixlib=rb-4.1.0&q=85"
+    }
+  ],
+  "roles": [
+    "EMPLOYEE",
+    "TRAINER",
+    "ADMINISTRATOR"
+  ],
+  "instructions_to_main_agent": "Build a React.js application using Tailwind CSS, Shadcn primitives, Lucide icons, and Recharts. Ensure fully functional role switching, realistic demo data, AI recommendations, skill gap calculation, interactive course player, assessments, certificates generator, and administrative analytics.",
+  "universal_guidelines": [
+    "Include data-testid on all interactive elements",
+    "Dark-first corporate aesthetic with electric blue/cyan accents",
+    "No transparent headers",
+    "Generous spacing and clean typography"
+  ]
+}
+
+
