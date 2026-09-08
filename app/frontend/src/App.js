@@ -1,58 +1,22 @@
-import { useEffect } from "react";
-import "@/App.css";
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { useEffect, useMemo, useState } from "react";
 import axios from "axios";
-import { HOME } from "@/constants/testIds";
+import { AreaChart, Area, ResponsiveContainer, XAxis, Tooltip, RadialBarChart, RadialBar } from "recharts";
+import { Activity, Award, BarChart3, Bell, BookOpen, BrainCircuit, ChevronDown, ChevronLeft, ChevronRight, CircleHelp, ClipboardCheck, Command, FileText, GraduationCap, LayoutDashboard, Menu, Play, Plus, Search, Settings2, Sparkles, Target, Users, X, Zap } from "lucide-react";
+import "@/App.css";
 
-const BACKEND_URL = process.env.REACT_APP_BACKEND_URL;
-const API = `${BACKEND_URL}/api`;
-
-const Home = () => {
-  const helloWorldApi = async () => {
-    try {
-      const response = await axios.get(`${API}/`);
-      console.log(response.data.message);
-    } catch (e) {
-      console.error(e, `errored out requesting / api`);
-    }
-  };
-
-  useEffect(() => {
-    helloWorldApi();
-  }, []);
-
-  return (
-    <div>
-      <header className="App-header">
-        <a
-          data-testid={HOME.emergentLink}
-          className="App-link"
-          href="https://emergent.sh"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <img src="https://avatars.githubusercontent.com/in/1201222?s=120&u=2686cf91179bbafbc7a71bfbc43004cf9ae1acea&v=4" />
-        </a>
-        <p className="mt-5">Building something incredible ~!</p>
-      </header>
-    </div>
-  );
-};
-
-function App() {
-  return (
-    <div className="App">
-      <BrowserRouter>
-        <Routes>
-          <Route path="/" element={<Home />}>
-            <Route index element={<Home />} />
-          </Route>
-        </Routes>
-      </BrowserRouter>
-    </div>
-  );
+const API = `${process.env.REACT_APP_BACKEND_URL}/api`;
+const nav = [{label:"Workspace",items:["Dashboard","My Skills","Skill Gaps","AI Learning","My Courses","Assessments","Certificates","Progress"]},{label:"Personal",items:["Profile"]}];
+const icons = {Dashboard:LayoutDashboard,"My Skills":Target,"Skill Gaps":BarChart3,"AI Learning":BrainCircuit,"My Courses":BookOpen,Assessments:ClipboardCheck,Certificates:Award,Progress:Activity,Profile:Users};
+const chartData=[{day:"Mon",hours:2.2},{day:"Tue",hours:3.8},{day:"Wed",hours:2.6},{day:"Thu",hours:4.4},{day:"Fri",hours:3.1},{day:"Sat",hours:5.2},{day:"Sun",hours:4.1}];
+function App(){
+ const [page,setPage]=useState("Dashboard"); const [collapsed,setCollapsed]=useState(false); const [data,setData]=useState(null); const [ai,setAi]=useState("Your current skill profile shows a gap in Advanced Data Analytics. Your fastest path is to build applied confidence through the next course module."); const [loadingAi,setLoadingAi]=useState(false); const [toast,setToast]=useState("");
+ useEffect(()=>{axios.get(`${API}/dashboard`).then(r=>setData(r.data)).catch(()=>setData({user:{name:"Jordan Mitchell",role:"EMPLOYEE",team:"Product Operations",initials:"JM"},stats:[],courses:[],skills:[],assessments:[],activity:[]}))},[]);
+ const askAI=async()=>{setLoadingAi(true);setAi("");try{const res=await fetch(`${API}/ai/recommendations`,{method:"POST",headers:{"Content-Type":"application/json"},body:JSON.stringify({skill:"Data Analytics"})});const reader=res.body.getReader(),decoder=new TextDecoder();let text="";while(true){const {done,value}=await reader.read();if(done)break;text+=decoder.decode(value);setAi(text.replaceAll("data: ","").replaceAll("\n\n"," "));}}catch(e){setAi("Your profile shows a meaningful opportunity to strengthen advanced data analytics. Start with the recommended course to build confidence through applied practice.")}setLoadingAi(false)};
+ if(!data)return <div className="loading-screen"><div className="brand-mark"><Command size={19}/></div><span>Loading your workspace…</span></div>;
+ return <div className="app-shell"><Sidebar collapsed={collapsed} page={page} setPage={setPage} setCollapsed={setCollapsed}/><main className={collapsed?"main-content expanded":"main-content"}><header className="topbar"><div className="mobile-brand"><div className="brand-mark"><Command size={17}/></div><b>CAPACITY<span>CONNECT</span></b></div><div className="breadcrumb"><span>Workspace</span><ChevronRight size={14}/><strong>{page}</strong></div><div className="header-actions"><button className="icon-button" data-testid="search-button"><Search size={18}/></button><button className="icon-button notification" data-testid="notifications-button"><Bell size={18}/><i/></button><div className="avatar" data-testid="user-avatar">JM</div><button className="profile-pill" data-testid="profile-menu-button">Jordan Mitchell <ChevronDown size={14}/></button></div></header><div className="page-wrap">{page==="Dashboard"?<Dashboard data={data} askAI={askAI} ai={ai} loadingAi={loadingAi} toast={toast} setToast={setToast}/>:<WorkspacePage page={page} data={data} setToast={setToast}/>}</div></main>{toast&&<div className="toast" data-testid="toast-message"><Zap size={15}/>{toast}</div>}</div>
 }
-
+function Sidebar({collapsed,page,setPage,setCollapsed}){return <aside className={collapsed?"sidebar collapsed":"sidebar"}><div className="brand"><div className="brand-mark"><Command size={18}/></div>{!collapsed&&<div><b>CAPACITY<span>CONNECT</span></b><small>Connect Skills. Unlock Potential.</small></div>}<button className="collapse-btn" data-testid="sidebar-toggle-button" onClick={()=>setCollapsed(!collapsed)}>{collapsed?<ChevronRight size={17}/>:<ChevronLeft size={17}/>}</button></div><div className="nav-list">{nav.map(group=><div className="nav-group" key={group.label}>{!collapsed&&<label>{group.label}</label>}{group.items.map(item=>{const Icon=icons[item];return <button key={item} data-testid={`nav-${item.toLowerCase().replaceAll(" ","-")}-button`} className={page===item?"nav-item active":"nav-item"} onClick={()=>setPage(item)}><Icon size={17}/>{!collapsed&&<span>{item}</span>}{item==="AI Learning"&&!collapsed&&<em>AI</em>}</button>})}</div>)}</div><div className="sidebar-bottom">{!collapsed&&<div className="upgrade-note"><Sparkles size={16}/><div><strong>Capability pulse</strong><small>Next review in 12 days</small></div></div>}<button className="nav-item" data-testid="help-button"><CircleHelp size={17}/>{!collapsed&&<span>Help center</span>}</button></div></aside>}
+function Dashboard({data,askAI,ai,loadingAi,toast,setToast}){return <><div className="welcome-row reveal"><div><div className="eyebrow"><span className="live-dot"/> PERSONALIZED WORKSPACE</div><h1>Good morning, Jordan <span className="wave">✦</span></h1><p>Here’s your capability pulse for this week.</p></div><button className="primary-button" data-testid="start-learning-button" onClick={()=>setToast("Learning path opened") }><Play size={15} fill="currentColor"/> Continue learning</button></div><section className="stats-grid reveal delay-1">{data.stats.map(s=><div className="stat-card" data-testid={`stat-${s.label.toLowerCase().replaceAll(" ","-")}`} key={s.label}><div className={`stat-icon ${s.tone}`}><Activity size={17}/></div><span>{s.label}</span><strong>{s.value}<small>{s.suffix}</small></strong><em>↗ {s.delta}</em></div>)}</section><section className="hero-grid reveal delay-2"><div className="panel capability-panel"><div className="panel-heading"><div><span className="eyebrow">CAPABILITY OVERVIEW</span><h2>Ready for your next level</h2></div><button className="more-button" data-testid="capability-filter-button">Last 30 days <ChevronDown size={14}/></button></div><div className="capability-body"><div className="radial"><ResponsiveContainer width="100%" height="100%"><RadialBarChart innerRadius="74%" outerRadius="100%" barSize={12} data={[{value:78,fill:"#00e5ff"}]} startAngle={90} endAngle={-270}><RadialBar background={{fill:"#202a36"}} dataKey="value" cornerRadius={8}/></RadialBarChart></ResponsiveContainer><div className="radial-label"><strong>78</strong><span>out of 100</span></div></div><div className="capability-copy"><div className="metric-line"><span>Skill readiness</span><b>74%</b></div><div className="progress"><i style={{width:"74%"}}/></div><div className="metric-line"><span>Role alignment</span><b>86%</b></div><div className="progress"><i className="blue" style={{width:"86%"}}/></div><p><Sparkles size={14}/> You’re trending <strong>6.4%</strong> above your last review.</p></div></div></div><div className="panel insight-panel"><div className="ai-top"><div className="ai-icon"><Sparkles size={17}/></div><span>AI INSIGHT</span><div className="confidence">96% match</div></div><h3>Your strongest next move</h3><p>{loadingAi?<span className="typing">Thinking through your profile…</span>:ai}</p><div className="insight-skill"><div><span>Priority skill gap</span><strong>Advanced Data Analytics</strong></div><div className="gap-score"><b>23</b><small>gap score</small></div></div><button className="text-button" data-testid="refresh-ai-button" onClick={askAI}>{loadingAi?"Generating insight…":"Refresh AI insight"}<ChevronRight size={15}/></button></div></section><section className="lower-grid reveal delay-3"><div className="panel skill-panel"><div className="panel-heading"><div><span className="eyebrow">SKILL MAP</span><h2>Where to focus</h2></div><button className="text-button" data-testid="view-skills-button">View all <ChevronRight size={15}/></button></div>{data.skills.slice(0,4).map(s=><div className="skill-row" key={s.name}><div className="skill-name"><span className={`skill-dot ${s.gap>20?"warn":""}`}/><strong>{s.name}</strong><small>{s.current}% / {s.required}%</small></div><div className="skill-track"><i style={{width:`${s.current}%`}}/><b style={{left:`${s.required}%`}}/></div><span className={s.gap>20?"gap-badge high":"gap-badge"}>{s.gap?`Gap ${s.gap}`:"Ready"}</span></div>)}</div><div className="panel activity-panel"><div className="panel-heading"><div><span className="eyebrow">ACTIVITY</span><h2>Learning rhythm</h2></div><Activity size={18} className="muted"/></div><div className="chart"><ResponsiveContainer width="100%" height="100%"><AreaChart data={chartData}><defs><linearGradient id="cyanFill" x1="0" y1="0" x2="0" y2="1"><stop offset="0%" stopColor="#00e5ff" stopOpacity={.3}/><stop offset="100%" stopColor="#00e5ff" stopOpacity={0}/></linearGradient></defs><XAxis dataKey="day" axisLine={false} tickLine={false} tick={{fill:"#66758a",fontSize:11}}/><Tooltip contentStyle={{background:"#171e29",border:"1px solid #263548",borderRadius:8,color:"#fff"}}/><Area type="monotone" dataKey="hours" stroke="#00e5ff" fill="url(#cyanFill)" strokeWidth={2}/></AreaChart></ResponsiveContainer></div><div className="chart-footer"><span><b>25.4h</b> total this month</span><em>+18.2%</em></div></div></section><section className="bottom-grid reveal delay-4"><div className="panel course-panel"><div className="panel-heading"><div><span className="eyebrow">IN PROGRESS</span><h2>Pick up where you left off</h2></div><button className="text-button" data-testid="view-courses-button">My courses <ChevronRight size={15}/></button></div><div className="course-list">{data.courses.slice(0,2).map(c=><div className="course-item" key={c.id}><img src={c.image} alt=""/><div className="course-info"><div className="course-meta"><span>{c.category}</span><small>{c.duration}</small></div><strong>{c.title}</strong><div className="course-progress"><div className="progress"><i style={{width:`${c.progress}%`}}/></div><small>{c.progress}% complete</small></div></div><button className="round-arrow" data-testid={`course-${c.id}-button`}><ChevronRight size={17}/></button></div>)}</div></div><div className="panel assessment-panel"><div className="panel-heading"><div><span className="eyebrow">UP NEXT</span><h2>Assessments</h2></div><ClipboardCheck size={18} className="muted"/></div>{data.assessments.map(a=><div className="assessment" key={a.title}><div className="assessment-icon"><FileText size={16}/></div><div><strong>{a.title}</strong><small>{a.date}</small></div><span>{a.status}</span></div>)}</div></section></>}
+function WorkspacePage({page,data,setToast}){const content={"My Skills":["Your capability profile","See how your skills stack up against your role requirements.","skill"],"Skill Gaps":["Skill gap analysis","Focus your energy where it creates the most impact.","skill"],"AI Learning":["AI learning studio","Personalized recommendations, shaped around your potential.","ai"],"My Courses":["Your learning library","Build the capability that moves your work forward.","courses"],Assessments:["Assessments","Stay ahead of every checkpoint in your learning path.","assessments"],Certificates:["Your achievements","A record of the capabilities you’ve earned.","certificates"],Progress:["Learning progress","Your momentum, measured over time.","progress"],Profile:["Your profile","Keep your professional identity and preferences current.","profile"]}[page]||[page,"Workspace overview","default"];return <div className="subpage reveal"><div className="welcome-row"><div><div className="eyebrow">CAPACITY CONNECT / {page.toUpperCase()}</div><h1>{content[0]}</h1><p>{content[1]}</p></div><button className="primary-button" data-testid="subpage-action-button" onClick={()=>setToast(`${page} workspace ready`)}><Plus size={15}/> New activity</button></div><div className="subpage-grid">{content[2]==="skill"?data.skills.map(s=><div className="panel detail-card" data-testid={`skill-card-${s.name.toLowerCase().replaceAll(" ","-")}`} key={s.name}><div className="detail-card-top"><Target size={17}/><span>{s.gap>20?"Priority gap":"On track"}</span></div><h3>{s.name}</h3><div className="big-number">{s.current}<small>/ {s.required}</small></div><div className="progress"><i style={{width:`${s.current}%`}}/></div><p>Current proficiency · {s.trend} this quarter</p></div>):content[2]==="courses"?data.courses.map(c=><div className="panel detail-card course-detail" key={c.id}><img src={c.image} alt=""/><span>{c.category}</span><h3>{c.title}</h3><p>{c.trainer} · {c.duration}</p><div className="progress"><i style={{width:`${c.progress}%`}}/></div><button className="text-button" data-testid={`open-course-${c.id}-button`} onClick={()=>setToast(`${c.title} opened`)}>Open course <ChevronRight size={15}/></button></div>):<div className="panel empty-panel"><div className="ai-icon"><Sparkles size={21}/></div><h2>{content[0]}</h2><p>This workspace is connected to your capability profile and ready for your next action.</p><button className="primary-button" data-testid="workspace-cta-button" onClick={()=>setToast("Your next action is ready")}>Explore workspace <ChevronRight size={15}/></button></div>}</div></div>}
 export default App;
-
 
