@@ -1,6 +1,6 @@
-courses=[await course_with_progress(user["id"],c) async for c in db.courses.find({}, {"_id":0})]
-    skills=await db.skills.find({}, {"_id":0}).to_list(50); assessments=await db.assessments.find({}, {"_id":0}).to_list(50); certificates=await db.certificates.find({"user_id":user["id"]},{"_id":0}).to_list(50)
-    return {"user":public(user),"stats":[{"label":"Capability score","value":"78","suffix":"/100","delta":"+6.4%","tone":"cyan"},{"label":"Learning progress","value":"64","suffix":"%","delta":"+12.8%","tone":"blue"},{"label":"Learning hours","value":"24.5","suffix":"hrs","delta":"+4.2h this month","tone":"violet"},{"label":"Certificates","value":f"{len(certificates):02d}","suffix":"earned","delta":"1 this quarter","tone":"green"}],"courses":courses,"skills":skills,"assessments":assessments,"certificates":certificates,"activity":[{"title":"Completed SQL for Analysts","meta":"Course completion · 2h ago","icon":"check"},{"title":"Earned Data Literacy certificate","meta":"Achievement · Yesterday","icon":"award"}]}
+ses.find_one({"id":course_id},{"_id":0})
+    course=await db.courses.find_one({"id":course_id},{"_id":0})
+    assessment=await db.assessments.find_one({"id":assessment_id},{"_id":0})
 @app.get("/api/courses")
 async def courses(user=Depends(current_user)):
     rows=[await course_with_progress(user["id"],c) async for c in db.courses.find({}, {"_id":0})]; return {"courses":rows}
